@@ -1,0 +1,31 @@
+# vim: ft=ruby:
+# Gollum Guard within docker
+
+# watch for file changes in /wiki folder, sync them to /repo
+guard 'yield' do
+  watch(/^wiki\/(?!\.git)/) do |m|
+    path = m[0]
+    file = if path.respond_to?(:to_path) then
+             path.to_path
+           else
+             path
+           end
+    file = file.delete_prefix("wiki/")
+    # system %Q(copy.sh #{file})
+    copy_result = `./copy.sh #{file}`
+    pp copy_result
+  end
+end
+
+
+guard 'livereload' do
+  # watch for file changes in the copy folder, run `git add` and `git commit`
+  # to make gollum recognize the changes, and run liveload to trigger browser
+  # reloading
+  watch(/^repo\/.+\.md$/) do |m|
+    # add every file but not the one start with dot
+    system %Q(cd repo && git add *)
+    system %Q(cd repo && git commit --amend -m "$(date "+Update: %Y-%m-%d %H:%M")")
+    m[0]
+  end
+end
