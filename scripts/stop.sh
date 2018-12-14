@@ -7,9 +7,8 @@
 cd "$PROJECT_DIR" || exit 1
 
 if [[ -n $(docker ps -f "name=gollum-$PROJECT_NAME" -q) ]]; then
-    echo_info "Stop previous gollum containers"
-    docker exec -it "gollum-$PROJECT_NAME" pkill gollum
-    docker exec -it "gollum-$PROJECT_NAME" pkill guard
+  echo_info "Stop previous gollum containers"
+  docker stop "gollum-$PROJECT_NAME"
 fi
 
 cd "$WORKING_DIR" || exit 1
